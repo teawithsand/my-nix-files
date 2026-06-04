@@ -18,6 +18,8 @@
     };
   };
 
+  # Makes CI/CD simpler
+  hardware.nvidia-container-toolkit.suppressNvidiaDriverAssertion = true;
   hardware.nvidia-container-toolkit.enable = true;
   virtualisation.docker.daemon.settings.features.cdi = true;
 
