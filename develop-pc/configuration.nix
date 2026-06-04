@@ -1,10 +1,9 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running 'nixos-help').
-
 { config, pkgs, ... }:
-
 {
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -15,7 +14,9 @@
   # Bootloader.
   # boot.loader.systemd-boot.enable = true;
   # boot.loader.efi.canTouchEfiVariables = true;
-  # boot.loader.kernelPackages = pkgs.linuxPackages;
+  # boot.loader.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages;
+  boot.kernelModules = [ "ecryptfs" ];
   boot.loader.systemd-boot.enable = false;
   boot.loader.grub.enable = true;
   boot.loader.grub.device = "nodev";
@@ -67,6 +68,7 @@
       # main."dns" = "systemd-resolved";
       device."wifi.scan-rand-mac-address" = "yes";
     };
+    plugins = with pkgs; [ networkmanager-openvpn ];
   };
 
   # Set your time zone.
@@ -92,16 +94,16 @@
 
   # Enable the GNOME Desktop Environment.
   #services.xserver.displayManager.gdm.enable = true;
-  # services.xserver.desktopManager.gnome.enable = true;
+  #  services.xserver.desktopManager.gnome.enable = true;
 
   services.desktopManager.gnome.enable = true;
   services.displayManager.gdm.enable = true;
 
 
-  environment.sessionVariables = {
-    ELECTRON_OZONE_PLATFORM_HINT = "x11";
-    GDK_BACKEND = "x11";
-  };
+  #environment.sessionVariables = {
+  #  ELECTRON_OZONE_PLATFORM_HINT = "x11";
+  #  GDK_BACKEND = "x11";
+  #};
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -134,11 +136,23 @@
   users.users.jan = {
     isNormalUser = true;
     description = "jan";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "containerd" ];
     packages = with pkgs; [
       thunderbird
       vscode
       blender
+    ];
+  };
+
+  programs.steam.enable = true;
+
+  users.users.gming = {
+    isNormalUser = true;
+    description = "gming";
+    packages = with pkgs; [
+      steam-run
+      steamcmd
+      xonotic
     ];
   };
  #home-manager.users.jan = {
@@ -212,6 +226,11 @@
   users.groups.kvm.members = [ "jan" ];
 
 
+  services.dbus.packages = with pkgs; [
+    networkmanager-openvpn
+  ];
+
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
 
@@ -220,8 +239,24 @@
     # cnijfilter2
     # rg
     # yubioath-flutter
+    lm_sensors
+    perlPackages.ImageExifTool
+    (pkgs.imagemagick.override {
+      libraw = pkgs.libraw;
+    })
+    nvidia-container-toolkit
+    nvidia-docker
+    libnvidia-container
+    buildkit
     efibootmgr
     kopia
+    cloud-utils
+    e2fsprogs
+    nerdctl
+    containerd
+    kata-runtime
+    cloud-hypervisor
+    cni-plugins
     # kopia-ui # broken as of 15.04.2026
     libisoburn
     yubikey-manager
@@ -242,6 +277,7 @@
     p7zip
     distrobox
     remmina
+    x2goclient
     openvpn
     nmap
     killall
@@ -264,7 +300,7 @@
     pigz
     gnutar
     yubikey-manager
-    #kitty
+    kitty
     #kitty-themes
     #android-tools
     python313
@@ -290,6 +326,12 @@
     mtr
     traceroute
     iotop
+    tcpdump
+    #tor-browser
+    corefonts
+    swtpm
+    virtiofsd
+    calibre
   ];
 
   programs.nix-ld.enable = true;
@@ -298,9 +340,63 @@
     enable = true;
     # enableNvidia = true;
   };
+
+  # virtualisation.containerd.enable = true;
+
+  virtualisation.containerd = {
+    enable = true;
+    
+    settings = {
+      version = 2;
+      plugins."io.containerd.grpc.v1.cri".containerd = {
+        default_runtime_name = "kata";   # lub "runc"
+        runtimes = {
+          kata = {
+            runtime_type = "io.containerd.kata.v2";
+          };
+          runc = {
+            runtime_type = "io.containerd.runc.v2";
+          };
+          nvidia = {
+            runtime_type = "io.containerd.runc.v2";
+            options = {
+              BinaryName = "/run/current-system/sw/bin/nvidia-container-runtime";
+            };
+          };
+        };
+      };
+    };
+  };
+
+  environment.shellAliases = {
+    nerdctl-kata = "nerdctl --runtime io.containerd.kata.v2";
+  };
+
+ 
   hardware.nvidia-container-toolkit.enable = true;
   virtualisation.containers.enable = true;
   virtualisation.docker.daemon.settings.features.cdi = true;
+
+  # environment.etc."kata-containers/configuration.toml".source = "${pkgs.kata-runtime}/share/defaults/kata-containers/configuration-clh.toml";
+  environment.etc."kata-containers/configuration-clh.toml".source =
+  pkgs.runCommand "kata-clh-config" {} ''
+    substitute ${pkgs.kata-runtime}/share/defaults/kata-containers/configuration-clh.toml $out \
+      --replace-fail ${pkgs.kata-runtime}/bin/cloud-hypervisor ${pkgs.cloud-hypervisor}/bin/cloud-hypervisor
+  '';
+
+  systemd.services.containerd.path = with pkgs; [
+    containerd
+    runc
+    kata-runtime
+    cloud-hypervisor
+    iptables
+    cni-plugins
+    util-linux
+    coreutils
+    gawk
+    gnugrep
+    gnused
+  ];
 
   xdg.portal.enable = true;
 
@@ -308,7 +404,7 @@
   xdg.portal.extraPortals = [
     pkgs.xdg-desktop-portal-gtk
     pkgs.xdg-desktop-portal-gnome
-    pkgs.xdg-desktop-portal-wlr
+    #pkgs.xdg-desktop-portal-wlr
   ];
 
   # Display link service
@@ -337,6 +433,17 @@
   networking.nameservers = [ "1.1.1.1#one.one.one.one" "1.0.0.1#one.one.one.one" ];
 
   services.udev.packages = [ pkgs.yubikey-personalization ];
+
+  systemd.services.buildkit = {
+    description = "BuildKit daemon";
+    after = [ "network.target" "containerd.service" ];
+    wantedBy = [ "multi-user.target" ];
+
+    serviceConfig = {
+      ExecStart = "${pkgs.buildkit}/bin/buildkitd";
+      Restart = "always";
+    };
+  };
   
   services.supergfxd.enable = true;
   systemd.services.supergfxd.path = [ pkgs.pciutils ];
@@ -352,17 +459,42 @@
   services.openssh.enable = false;
 
   # networking.firewall.trustedInterfaces = [ "p2p-wl+" ];
-  networking.firewall.allowPing = true;
-  networking.firewall.allowedTCPPorts = [ 4242 4245 ];
-  networking.firewall.allowedUDPPorts = [ 4242 4245 ];
+  #networking.firewall.allowPing = true;
+  #networking.firewall.allowedTCPPorts = [ 4242 4245 3478 ];
+  #networking.firewall.allowedUDPPorts = [ 4242 4245 3478 ];
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-  networking.firewall.enable = true;
+
+  networking.firewall = {
+    enable = true;
+    allowPing = true;
+
+    allowedTCPPorts = [
+      4242
+      4245
+    ];
+
+    allowedUDPPorts = [
+      4242
+      4245
+    ];
+
+    # Relay range for WebRTC/TURN
+    #allowedUDPPortRanges = [
+    #  { from = 49160; to = 49200; }
+    #];
+
+    # TCP relays for WebRTC/TURN
+    #allowedTCPPortRanges = [
+    #  { from = 49160; to = 49200; }
+    #];
+  };
 
   security.polkit.enable = true;
+  # services.containerd.enable = true;
 
   # graphics
   hardware.graphics = {
@@ -421,5 +553,5 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "25.11"; # Did you read the comment?
+  system.stateVersion = "25.05"; # Did you read the comment?
 }

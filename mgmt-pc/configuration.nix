@@ -1,21 +1,16 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running 'nixos-help').
-
 { config, pkgs, ... }:
 {
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
   imports =
-    [ # Include the results of the hardware scan.
+    [ 
+      # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      # ./containers/projects/tws-lib-collection.nix
-      # <home-manager/nixos>
     ];
 
-  # Bootloader.
-  # boot.loader.systemd-boot.enable = true;
-  # boot.loader.efi.canTouchEfiVariables = true;
-  # boot.loader.kernelPackages = pkgs.linuxPackages_latest;
-  boot.kernelPackages = pkgs.linuxPackages_6_18;
+  boot.kernelPackages = pkgs.linuxPackages;
   boot.kernelModules = [ "ecryptfs" ];
   boot.loader.systemd-boot.enable = false;
   boot.loader.grub.enable = true;
@@ -92,20 +87,9 @@
   # Enable the X11 windowing system.
   services.xserver.enable = true;
 
-  # Enable the GNOME Desktop Environment.
-  #services.xserver.displayManager.gdm.enable = true;
-  # services.xserver.desktopManager.gnome.enable = true;
-
   services.desktopManager.gnome.enable = true;
   services.displayManager.gdm.enable = true;
 
-
-  #environment.sessionVariables = {
-  #  ELECTRON_OZONE_PLATFORM_HINT = "x11";
-  #  GDK_BACKEND = "x11";
-  #};
-
-  # Configure keymap in X11
   services.xserver.xkb = {
     layout = "pl";
     variant = "";
@@ -129,10 +113,6 @@
     jack.enable = true;
   };
 
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
-
-  # Define a user account. Don't forget to set a password with 'passwd'.
   users.users.jan = {
     isNormalUser = true;
     description = "jan";
@@ -152,30 +132,9 @@
     packages = with pkgs; [
       steam-run
       steamcmd
+      xonotic
     ];
   };
- #home-manager.users.jan = {
- #   dconf.settings = {
- #     "org/gnome/desktop/background" = {
- #       picture-uri-dark = "file://${pkgs.nixos-artwork.wallpapers.nineish-dark-gray.src}";
- #     };
- #     "org/gnome/desktop/interface" = {
- #       color-scheme = "prefer-dark";
- #     };
- #   };
- #
- #   gtk = {
- #     enable = true;
- #     theme = {
- #       name = "Adwaita-dark";
- #       package = pkgs.gnome-themes-extra;
- #     };
- #   };
-
-    # Wayland, X, etc. support for session vars
-#    systemd.user.sessionVariables = config.home-manager.users.jan.home.sessionVariables;
-#    home.stateVersion = "26.05";
-#  };
 
   qt = {
     enable = true;
@@ -229,15 +188,15 @@
     networkmanager-openvpn
   ];
 
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    # cnijfilter2
-    # rg
-    # yubioath-flutter
+    lm_sensors
+    perlPackages.ImageExifTool
+    (pkgs.imagemagick.override {
+      libraw = pkgs.libraw;
+    })
+    nvidia-container-toolkit
+    nvidia-docker
+    libnvidia-container
     buildkit
     efibootmgr
     kopia
@@ -284,7 +243,6 @@
     displaylink
     dislocker
     ungoogled-chromium
-    ffmpeg_7-full
     obs-studio
     pv
     zstd
@@ -292,33 +250,19 @@
     gnutar
     yubikey-manager
     kitty
-    #kitty-themes
-    #android-tools
     python313
     python313Packages.ipython
     ecryptfs
     nix-index
     pciutils
     lshw
-    # gnome-network-displays
     iw
-    gst_all_1.gstreamer
-    gst_all_1.gst-plugins-base
-    gst_all_1.gst-plugins-good
-    gst_all_1.gst-plugins-bad
-    gst_all_1.gst-plugins-ugly
-    gst_all_1.gst-vaapi
-    gst_all_1.gst-libav
     dig
-    libreoffice
-    wireshark
-    v4l-utils
     signal-desktop
     mtr
     traceroute
     iotop
     tcpdump
-    #tor-browser
   ];
 
   programs.nix-ld.enable = true;
@@ -335,14 +279,21 @@
     
     settings = {
       version = 2;
-
       plugins."io.containerd.grpc.v1.cri".containerd = {
-        default_runtime_name = "kata";
-        runtimes.kata = {
-          runtime_type = "io.containerd.kata.v2";
-        };
-        runtimes.runc = {
-          runtime_type = "io.containerd.runc.v2";
+        default_runtime_name = "kata";   # lub "runc"
+        runtimes = {
+          kata = {
+            runtime_type = "io.containerd.kata.v2";
+          };
+          runc = {
+            runtime_type = "io.containerd.runc.v2";
+          };
+          nvidia = {
+            runtime_type = "io.containerd.runc.v2";
+            options = {
+              BinaryName = "/run/current-system/sw/bin/nvidia-container-runtime";
+            };
+          };
         };
       };
     };
@@ -435,19 +386,7 @@
   };
   services.pcscd.enable = true;
 
-  # Enable the OpenSSH daemon.
   services.openssh.enable = false;
-
-  # networking.firewall.trustedInterfaces = [ "p2p-wl+" ];
-  #networking.firewall.allowPing = true;
-  #networking.firewall.allowedTCPPorts = [ 4242 4245 3478 ];
-  #networking.firewall.allowedUDPPorts = [ 4242 4245 3478 ];
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  #networking.firewall.enable = true;
 
   networking.firewall = {
     enable = true;
@@ -456,25 +395,22 @@
     allowedTCPPorts = [
       4242
       4245
-      3478
-      5349
     ];
 
     allowedUDPPorts = [
       4242
       4245
-      3478
     ];
 
     # Relay range for WebRTC/TURN
-    allowedUDPPortRanges = [
-      { from = 49160; to = 49200; }
-    ];
+    #allowedUDPPortRanges = [
+    #  { from = 49160; to = 49200; }
+    #];
 
     # TCP relays for WebRTC/TURN
-    allowedTCPPortRanges = [
-      { from = 49160; to = 49200; }
-    ];
+    #allowedTCPPortRanges = [
+    #  { from = 49160; to = 49200; }
+    #];
   };
 
   security.polkit.enable = true;
@@ -485,57 +421,11 @@
     enable = true;
   };
 
-  hardware.nvidia = {
-
-    # Modesetting is required.
-    modesetting.enable = true;
-
-    # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
-    # Enable this if you have graphical corruption issues or application crashes after waking
-    # up from sleep. This fixes it by saving the entire VRAM memory to /tmp/ instead 
-    # of just the bare essentials.
-    powerManagement.enable = true;
-
-    # Fine-grained power management. Turns off GPU when not in use.
-    # Experimental and only works on modern Nvidia GPUs (Turing or newer).
-    powerManagement.finegrained = true;
-
-    # Use the NVidia open source kernel module (not to be confused with the
-    # independent third-party "nouveau" open source driver).
-    # Support is limited to the Turing and later architectures. Full list of 
-    # supported GPUs is at: 
-    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
-    # Only available from driver 515.43.04+
-    open = false;
-
-    # Enable the Nvidia settings menu,
-    # accessible via `nvidia-settings`.
-    nvidiaSettings = true;
-
-    # Optionally, you may need to select the appropriate driver version for your specific GPU.
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
-    
-    prime = {
-      offload.enable = true;
-      offload.enableOffloadCmd = true;
-      # sync.enable = false;
-
-      # reverseSync.enable = true;
-      # Enable if using an external GPU
-      # allowExternalGpu = false;
-
-      # Make sure to use the correct Bus ID values for your system!
-      amdgpuBusId = "PCI:54:00:0";
-      nvidiaBusId = "PCI:01:00:0";
-    };
-  };
-  
-
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It's perfectly fine and recommended to leave
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "25.11"; # Did you read the comment?
+  system.stateVersion = "25.05"; # Did you read the comment?
 }
