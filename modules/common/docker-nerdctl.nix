@@ -32,7 +32,8 @@
 
   environment.etc."kata-containers/configuration-clh.toml".source =
     pkgs.runCommand "kata-clh-config" { } ''
-      substitute ${pkgs.kata-runtime}/share/defaults/kata-containers/configuration-clh.toml $out         --replace-fail ${pkgs.kata-runtime}/bin/cloud-hypervisor ${pkgs.cloud-hypervisor}/bin/cloud-hypervisor
+      substitute ${pkgs.kata-runtime}/share/defaults/kata-containers/configuration-clh.toml $out \
+        --replace-fail ${pkgs.kata-runtime}/bin/cloud-hypervisor ${pkgs.cloud-hypervisor}/bin/cloud-hypervisor
     '';
 
   systemd.services.containerd.path = with pkgs; [
