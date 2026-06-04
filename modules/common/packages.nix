@@ -61,5 +61,6 @@
     traceroute
     iotop
     tcpdump
+    gocryptfs
   ];
 }
