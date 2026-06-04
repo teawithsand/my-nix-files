@@ -31,7 +31,7 @@
     x2goclient
     openvpn
     nmap
-    builtins.getAttr ("kill" + "all") pkgs
+    psmisc
     virt-manager
     libvirt
     qemu
