@@ -16,7 +16,6 @@
   # boot.loader.efi.canTouchEfiVariables = true;
   # boot.loader.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelPackages = pkgs.linuxPackages;
-  boot.kernelModules = [ "ecryptfs" ];
   boot.loader.systemd-boot.enable = false;
   boot.loader.grub.enable = true;
   boot.loader.grub.device = "nodev";
@@ -305,7 +304,6 @@
     #android-tools
     python313
     python313Packages.ipython
-    ecryptfs
     nix-index
     pciutils
     lshw
