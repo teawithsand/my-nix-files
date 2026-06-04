@@ -1,0 +1,65 @@
+{ pkgs, ... }:
+{
+  environment.systemPackages = with pkgs; [
+    lm_sensors
+    perlPackages.ImageExifTool
+    (pkgs.imagemagick.override {
+      libraw = pkgs.libraw;
+    })
+    efibootmgr
+    kopia
+    cloud-utils
+    e2fsprogs
+    libisoburn
+    whois
+    gimp2
+    mc
+    mitmproxy
+    cmake
+    gcc15
+    gdb
+    nasm
+    jq
+    dnsmasq
+    phodav
+    gnome-boxes
+    zenmap
+    networkmanager-openvpn
+    p7zip
+    distrobox
+    remmina
+    x2goclient
+    openvpn
+    nmap
+    psmisc
+    virt-manager
+    libvirt
+    qemu
+    xsane
+    simple-scan
+    file
+    net-tools
+    wget
+    git
+    dislocker
+    ungoogled-chromium
+    obs-studio
+    pv
+    zstd
+    pigz
+    gnutar
+    kitty
+    python313
+    python313Packages.ipython
+    nix-index
+    pciutils
+    lshw
+    iw
+    dig
+    signal-desktop
+    mtr
+    traceroute
+    iotop
+    tcpdump
+  ];
+}
