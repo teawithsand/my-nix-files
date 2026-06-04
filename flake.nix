@@ -5,23 +5,16 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
   };
 
-  outputs = { self, nixpkgs, ... }: {
-    nixosConfigurations = {
-      develop-pc = nixpkgs.lib.nixosSystem {
+  outputs = { nixpkgs, ... }:
+    let
+      mkHost = hostName: nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-
-        modules = [
-          ./develop-pc/configuration.nix
-        ];
+        modules = [ ./${hostName}/configuration.nix ];
       };
-
-      mgmt-pc = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-
-        modules = [
-          ./configuration.nix
-        ];
+    in {
+      nixosConfigurations = {
+        develop-pc = mkHost "develop-pc";
+        mgmt-pc = mkHost "mgmt-pc";
       };
     };
-  };
 }
