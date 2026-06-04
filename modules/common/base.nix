@@ -37,23 +37,12 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  services.gnome.gcr-ssh-agent.enable = false;
-  programs.ssh.startAgent = true;
-  programs.gnupg.agent = {
-    enable = true;
-    enableSSHSupport = false;
-  };
-
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code
     nerd-fonts.hack
     nerd-fonts.meslo-lg
   ];
-
-  services.udev.packages = [ pkgs.yubikey-personalization ];
-  services.pcscd.enable = true;
-  services.openssh.enable = false;
 
   security.polkit.enable = true;
 

@@ -6,18 +6,11 @@
     (pkgs.imagemagick.override {
       libraw = pkgs.libraw;
     })
-    buildkit
     efibootmgr
     kopia
     cloud-utils
     e2fsprogs
-    nerdctl
-    containerd
-    kata-runtime
-    cloud-hypervisor
-    cni-plugins
     libisoburn
-    yubikey-manager
     whois
     gimp2
     mc
