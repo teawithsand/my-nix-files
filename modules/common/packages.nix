@@ -6,6 +6,7 @@
     (pkgs.imagemagick.override {
       libraw = pkgs.libraw;
     })
+    cacert
     efibootmgr
     kopia
     cloud-utils
