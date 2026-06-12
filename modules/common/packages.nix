@@ -22,7 +22,6 @@
     nasm
     jq
     dnsmasq
-    phodav
     gnome-boxes
     zenmap
     networkmanager-openvpn
