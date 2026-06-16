@@ -26,9 +26,9 @@
       options = [ "fmask=0077" "dmask=0077" ];
     };
 
-  swapDevices =
-    [ { device = "/dev/mapper/luks-d44188bf-962a-429c-a875-a0d314213c56"; }
-    ];
+  # swapDevices =
+  #  [ { device = "/dev/mapper/luks-d44188bf-962a-429c-a875-a0d314213c56"; }
+  #  ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
