@@ -19,15 +19,18 @@
       plugins."io.containerd.grpc.v1.cri".containerd = {
         default_runtime_name = "kata";
         runtimes = {
-          kata.runtime_type = "io.containerd.kata.v2";
-          runc.runtime_type = "io.containerd.runc.v2";
+          kata = {
+            runtime_type = "io.containerd.kata.v2";
+            options = {
+              ConfigPath = "/etc/kata-containers/configuration-clh.toml";
+            };
+          };
+          runc = {
+            runtime_type = "io.containerd.runc.v2";
+          };
         };
       };
     };
-  };
-
-  environment.shellAliases = {
-    nerdctl-kata = "nerdctl --runtime io.containerd.kata.v2";
   };
 
   environment.etc."kata-containers/configuration-clh.toml".source =
@@ -35,6 +38,9 @@
       substitute ${pkgs.kata-runtime}/share/defaults/kata-containers/configuration-clh.toml $out \
         --replace-fail ${pkgs.kata-runtime}/bin/cloud-hypervisor ${pkgs.cloud-hypervisor}/bin/cloud-hypervisor
     '';
+
+  # HACK: replace main configuration with this one, I guess for overriding qemu it will be fine
+  environment.etc."kata-containers/configuration.toml".source = "/etc/kata-containers/configuration-clh.toml";
 
   systemd.services.containerd.path = with pkgs; [
     containerd

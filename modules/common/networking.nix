@@ -60,6 +60,10 @@
       # nerdctl
       iifname "nerdctl0" accept
       oifname "nerdctl0" ct state established,related accept
+
+      # Allow all bridge networks
+      iifname "br-*" accept
+      oifname "br-*" ct state established,related accept
     '';
     allowedTCPPorts = [
       4242
