@@ -10,6 +10,9 @@
     gst_all_1.gst-vaapi
     gst_all_1.gst-libav
     libreoffice
+    hunspell
+    hunspellDicts.pl_PL
+    hunspellDicts.en_US
     wireshark
     v4l-utils
     corefonts
