@@ -46,9 +46,21 @@
     "1.0.0.1#one.one.one.one"
   ];
 
+  networking.nftables.enable = true;
   networking.firewall = {
     enable = true;
     allowPing = true;
+    filterForward = true;
+
+    extraForwardRules = ''
+      # Docker bridge
+      iifname "docker0" accept
+      oifname "docker0" ct state established,related accept
+
+      # nerdctl
+      iifname "nerdctl0" accept
+      oifname "nerdctl0" ct state established,related accept
+    '';
     allowedTCPPorts = [
       4242
       4245

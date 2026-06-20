@@ -13,6 +13,7 @@
   boot.loader.grub.efiSupport = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot";
+  boot.loader.grub.memtest86.enable = true;
   boot.kernel.sysctl = {
     "kernel.sysrq" = 502;
     "net.ipv4.ip_forward" = 1;

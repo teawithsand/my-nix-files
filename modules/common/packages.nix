@@ -6,6 +6,7 @@
     (pkgs.imagemagick.override {
       libraw = pkgs.libraw;
     })
+    iptables
     cacert
     efibootmgr
     kopia
@@ -13,30 +14,21 @@
     e2fsprogs
     libisoburn
     whois
-    gimp2
     mc
-    mitmproxy
     cmake
     gcc15
     gdb
-    nasm
-    jq
     dnsmasq
     gnome-boxes
     zenmap
     networkmanager-openvpn
     p7zip
-    distrobox
-    remmina
-    x2goclient
     openvpn
     nmap
     psmisc
     virt-manager
     libvirt
     qemu
-    xsane
-    simple-scan
     file
     net-tools
     wget
