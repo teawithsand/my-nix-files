@@ -8,7 +8,7 @@
     ./containers.nix
     ./docker-nerdctl.nix
     ./ssh-gpg.nix
-    ./ssh-server.nix
+    ./ssh-server-off.nix
     ./yubikey.nix
   ];
 }
