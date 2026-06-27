@@ -10,5 +10,6 @@
     ./ssh-gpg.nix
     ./ssh-server-off.nix
     ./yubikey.nix
+    ./disk-monitor.nix
   ];
 }
