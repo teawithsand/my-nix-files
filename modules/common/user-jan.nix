@@ -11,16 +11,6 @@
     ];
   };
 
-  users.users.gming = {
-    isNormalUser = true;
-    description = "gming";
-    packages = with pkgs; [
-      steam-run
-      steamcmd
-      xonotic
-    ];
-  };
-
   users.groups.libvirtd.members = [ "jan" ];
   users.groups.kvm.members = [ "jan" ];
 }

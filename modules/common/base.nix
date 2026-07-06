@@ -46,8 +46,9 @@
   ];
 
   security.polkit.enable = true;
-
   hardware.graphics.enable = true;
-
   system.stateVersion = "25.05";
+
+  zramSwap.enable = true;
+  security.apparmor.enable = true;
 }

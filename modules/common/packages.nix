@@ -43,7 +43,6 @@
     kitty
     python313
     python313Packages.ipython
-    nix-index
     pciutils
     lshw
     iw

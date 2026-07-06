@@ -3,7 +3,7 @@
     ./base.nix
     ./networking.nix
     ./desktop.nix
-    ./users.nix
+    ./user-jan.nix
     ./packages.nix
     ./containers.nix
     ./docker-nerdctl.nix
