@@ -19,5 +19,9 @@
     swtpm
     virtiofsd
     calibre
+    audacity
+    kdePackages.kdenlive
+    gimp
   ];
+  programs.gphoto2.enable = true;
 }
