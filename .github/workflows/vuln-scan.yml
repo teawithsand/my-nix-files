@@ -1,7 +1,7 @@
 name: "Vulnix Security Scan"
 on:
   schedule:
-    - cron: '0 3 * * *' # Daily at 3 AM UTC
+    - cron: '0 3 * * *'
   workflow_dispatch:
   push:
     branches: [master]
@@ -31,10 +31,13 @@ jobs:
           LANG: C.UTF-8
         run: |
           set -o pipefail
+          rc=0
           nix run nixpkgs#vulnix -- \
             --json \
             result-${{ matrix.host }} \
-            | tee vulnix-report-${{ matrix.host }}.json
+            | tee vulnix-report-${{ matrix.host }}.json || rc=$?
+          # exit 2 = advisories found; that is a report, not a failure
+          [ "$rc" -eq 2 ] || exit "$rc"
 
       - name: Upload vulnerability report
         if: always()
