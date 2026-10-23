@@ -1,0 +1,44 @@
+name: "Vulnix Security Scan"
+on:
+  schedule:
+    - cron: '0 3 * * *' # Daily at 3 AM UTC
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+jobs:
+  vulnix-scan:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        host: [mgmt-pc, develop-pc]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-26.05
+
+      - name: Build system closure for ${{ matrix.host }}
+        run: |
+          nix build .#nixosConfigurations.${{ matrix.host }}.config.system.build.toplevel \
+            --print-build-logs \
+            -o result-${{ matrix.host }}
+
+      - name: Run vulnix on ${{ matrix.host }} closure
+        env:
+          LANG: C.UTF-8
+        run: |
+          set -o pipefail
+          nix run nixpkgs#vulnix -- \
+            --json \
+            result-${{ matrix.host }} \
+            | tee vulnix-report-${{ matrix.host }}.json
+
+      - name: Upload vulnerability report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vulnix-report-${{ matrix.host }}
+          path: vulnix-report-${{ matrix.host }}.json
