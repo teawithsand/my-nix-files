@@ -15,6 +15,9 @@
     libisoburn
     whois
     mc
+    fscrypt-experimental
+    gocryptfs
+    keepassxc
     cmake
     gcc15
     gdb
@@ -54,4 +57,5 @@
     tcpdump
     gocryptfs
   ];
+  programs.firefox.nativeMessagingHosts.packages = [ pkgs.keepassxc ];
 }
