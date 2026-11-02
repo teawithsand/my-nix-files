@@ -14,14 +14,14 @@
     hunspellDicts.pl_PL
     hunspellDicts.en_US
     wireshark
-    v4l-utils
     corefonts
-    swtpm
-    virtiofsd
     calibre
     audacity
     kdePackages.kdenlive
     gimp
+
+    steam-run
+    steamcmd
   ];
   programs.gphoto2.enable = true;
 }

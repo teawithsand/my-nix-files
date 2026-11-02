@@ -1,6 +1,7 @@
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
+    virtiofsd
     buildkit
     nerdctl
     containerd

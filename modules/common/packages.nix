@@ -1,61 +1,37 @@
 { pkgs, ... }:
 {
-  environment.systemPackages = with pkgs; [
-    lm_sensors
-    perlPackages.ImageExifTool
-    (pkgs.imagemagick.override {
-      libraw = pkgs.libraw;
-    })
-    iptables
-    cacert
-    efibootmgr
-    kopia
-    cloud-utils
-    e2fsprogs
-    libisoburn
-    whois
-    mc
-    fscrypt-experimental
-    gocryptfs
-    keepassxc
-    cmake
-    gcc15
-    gdb
-    dnsmasq
-    gnome-boxes
-    zenmap
-    networkmanager-openvpn
-    p7zip
-    openvpn
-    nmap
-    psmisc
-    virt-manager
-    libvirt
-    qemu
-    file
-    net-tools
-    wget
-    git
-    dislocker
-    ungoogled-chromium
-    obs-studio
-    pv
-    zstd
-    pigz
-    gnutar
-    kitty
-    python313
-    python313Packages.ipython
-    pciutils
-    lshw
-    iw
-    dig
-    signal-desktop
-    mtr
-    traceroute
-    iotop
-    tcpdump
-    gocryptfs
-  ];
-  programs.firefox.nativeMessagingHosts.packages = [ pkgs.keepassxc ];
+	programs.firefox.enable = true;
+
+	environment.systemPackages = with pkgs; [
+		ungoogled-chromium
+		vscodium
+		lm_sensors
+		iptables
+		efibootmgr
+		kopia
+		keepassxc
+		dnsmasq
+		openvpn
+		nmap
+		psmisc
+		net-tools
+		wget
+		curl
+		git
+		pv
+		zstd
+		pigz
+		gnutar
+		kitty
+		python313
+		python313Packages.ipython
+		pciutils
+		lshw
+		iw
+		dig
+		traceroute
+		tcpdump
+		gocryptfs
+	];
+	programs.firefox.nativeMessagingHosts.packages = [ pkgs.keepassxc ];
 }

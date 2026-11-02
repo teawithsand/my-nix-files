@@ -4,8 +4,7 @@
     [
       ../modules/common
       ../modules/hardware/displaylink.nix
-      ../modules/ssd.nix
-      ../modules/common/yubikey.nix
+      
       ./machine.nix
       ./packages.nix
       ./hardware-configuration.nix

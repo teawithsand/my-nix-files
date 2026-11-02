@@ -6,8 +6,6 @@
       ../modules/hardware/asus.nix
       ../modules/hardware/displaylink.nix
       ../modules/hardware/nvidia-prime.nix
-      ../modules/user-gming.nix
-      ../modules/ssd.nix
       ./packages.nix
       ./hardware-configuration.nix
     ];

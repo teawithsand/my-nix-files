@@ -6,6 +6,10 @@
     internalInterfaces = [ "ve-+" ];
   };
 
+  environment.systemPackages = with pkgs; [
+    networkmanager-openvpn
+  ];
+
   # Grant wpa_supplicant access to certs, so wfi networks with these certs work fine.
   systemd.services.wpa_supplicant.serviceConfig = {
     ProtectHome = lib.mkForce "tmpfs";

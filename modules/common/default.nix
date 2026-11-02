@@ -1,15 +1,16 @@
 {
-  imports = [
-    ./base.nix
-    ./networking.nix
-    ./desktop.nix
-    ./user-jan.nix
-    ./packages.nix
-    ./containers.nix
-    ./docker-nerdctl.nix
-    ./ssh-gpg.nix
-    ./ssh-server-off.nix
-    ./yubikey.nix
-    ./disk-monitor.nix
-  ];
+	imports = [
+		./base.nix
+		./desktop.nix
+		./disk-monitor.nix
+		./docker-nerdctl.nix
+		./networking.nix
+		./packages.nix
+		./user-jan.nix
+		./ssd.nix
+		./ssh-gpg.nix
+		./ssh-server-off.nix
+		./yubikey.nix
+		./vms.nix
+	];
 }

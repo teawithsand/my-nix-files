@@ -5,12 +5,6 @@
     description = "jan";
     extraGroups = [ "networkmanager" "wheel" "docker" "containerd" "camera" ];
     packages = with pkgs; [
-      thunderbird
-      vscode
-      blender
-      steam-run
-      steamcmd
-      xonotic
     ];
   };
 
