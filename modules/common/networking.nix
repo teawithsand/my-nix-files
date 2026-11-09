@@ -13,7 +13,7 @@
   # Grant wpa_supplicant access to certs, so wfi networks with these certs work fine.
   systemd.services.wpa_supplicant.serviceConfig = {
     ProtectHome = lib.mkForce "tmpfs";
-    BindReadOnlyPaths = lib.mkAfter [ "/home/jan/Documents/certs" ];
+    BindReadOnlyPaths = lib.mkAfter [ "-/home/jan/Documents/certs" ];
   };
 
   networking.networkmanager = {
