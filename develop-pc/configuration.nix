@@ -10,7 +10,14 @@
       ./hardware-configuration.nix
     ];
 
-  boot.initrd.luks.devices."luks-de544881-2897-42b9-a196-82c0deede50a" = {
+  # Compress for btrfs
+  fileSystems = {
+    "/".options = [ "compress=zstd" ];
+    "/home".options = [ "compress=zstd" ];
+    "/nix".options = [ "compress=zstd" "noatime" ];
+  };
+
+  boot.initrd.luks.devices."luks-1c5795c5-5459-4fb6-81af-d897254a77b4" = {
     allowDiscards = true;
     bypassWorkqueues = true;
   };
